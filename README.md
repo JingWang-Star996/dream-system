@@ -1,540 +1,303 @@
-# 🌙 Dream Memory Consolidation System
+# 🌙 Dream 记忆整合系统
 
-**Inspired by Claude Code · Fully Compatible with OpenClaw · One-Click Installation, Instant Results**
+> 一个自动化的记忆整合系统，灵感来自 Claude Code 的记忆管理功能
 
-**Release Author**: 【游戏人王鲸】【游戏制作人王鲸】(JingWang)
-
----
-
-## 📢 Introduction
-
-Dream is an automated memory management tool designed for OpenClaw. Inspired by Claude Code's memory management, it converts short-term memory (daily logs, work records) into long-term memory (MEMORY.md).
-
-### ✨ Core Features
-
-| Feature | Description |
-|---------|-------------|
-| 🤖 AI Analysis | Auto-extract valuable info using Alibaba Cloud Bailian qwen3.5-plus |
-| 📝 Auto Consolidation | Convert short-term memory to long-term memory |
-| 🗑️ Smart Pruning | Keep MEMORY.md concise (<200 lines, ~25KB) |
-| 💾 Auto Backup | Backup before writing to prevent data loss |
-| ⏰ Scheduled Execution | Auto-run daily at 5:00 AM |
-| 🔒 Security | Read-only mode + Content validation + Lock mechanism |
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 ---
 
-## 🚀 Quick Start
+## 🔒 安全提示
 
-### One-Click Installation (Recommended)
+**⚠️ 重要**：本项目不使用硬编码 API Key，所有敏感信息使用环境变量配置。
 
+**快速配置**：
 ```bash
-# Download and run installer
-curl -O https://raw.githubusercontent.com/JingWang-Star996/dream-system/main/install.sh
-chmod +x install.sh
-./install.sh
-```
-
-### Manual Installation
-
-```bash
-# Clone to OpenClaw workspace
-cd ~/.openclaw/workspace
-git clone https://github.com/JingWang-Star996/dream-system.git skills/dream-system
-
-# Configure API Key
-export DREAM_API_KEY="sk-your-bailian-api-key"
+export DREAM_API_KEY="your-api-key-here"
 export DREAM_MODEL="qwen3.5-plus"
-
-# Configure cron job
-crontab -e
-# Add: 0 5 * * * cd ~/.openclaw/workspace && node skills/dream-system/executor.js >> logs/dream.log 2>&1
-
-# Test run
-node skills/dream-system/executor.js
 ```
+
+**❌ 永远不要**：
+- 在代码中硬编码 API Key
+- 将 API Key 提交到 Git
+- 在公开文档中分享 API Key
 
 ---
 
-## 📁 File Structure
+## ✨ 核心功能
+
+- 🤖 **AI 智能分析** - 使用 qwen3.5-plus 模型分析短期记忆
+- 📝 **自动整合** - 将短期记忆转化为长期记忆
+- 🗑️ **智能修剪** - 保持 MEMORY.md 精简（<200 行）
+- 💾 **自动备份** - 写入前自动备份，防止数据丢失
+- ⏰ **定时执行** - 每天凌晨 5 点自动运行
+
+---
+
+## 🏗️ 系统架构
 
 ```
 dream-system/
-├── SKILL.md              # OpenClaw skill definition
-├── executor.js           # Main executor (10.2 KB)
-├── aiAnalyzer.js         # AI analysis module (3.8 KB)
-├── pruner.js             # Pruning module (10.2 KB)
-├── start.sh              # Startup script
-├── install.sh            # One-click installer ⭐
-├── README.md             # This document (bilingual)
-├── README.github.md      # GitHub documentation
-├── RELEASE.md            # Release notes
-├── CRON_SETUP.md         # Cron setup guide
-└── 发布帖.md             # Detailed release post (Chinese)
+├── executor.js          # 主执行器
+├── aiAnalyzer.js        # AI 分析模块
+├── pruner.js            # 智能修剪模块
+├── config.js            # 配置管理
+├── scripts/             # 工具脚本
+│   └── cleanup-before-release.sh  # 发布前清理脚本
+└── docs/                # 文档
+    └── RELEASE_CHECKLIST.md  # 发布前检查清单
 ```
-
----
-
-## 🔄 Execution Flow
-
-```
-Phase 1: Orient
-  ↓ Read MEMORY.md
-  ↓ List memory/ directory
-
-Phase 2: Gather
-  ↓ Read plans
-  ↓ Read completions
-  ↓ Read recent memory files
-
-Phase 3: Consolidate
-  ↓ AI analysis extract key info
-  ↓ Categorize to existing topics or create new
-  ↓ Convert relative dates to absolute dates
-
-Phase 4: Prune
-  ↓ Remove outdated info (>30 days)
-  ↓ Keep <200 lines
-  ↓ Update index
-```
-
----
-
-## 🛡️ Security Features
-
-### 1. Read-Only Mode
-
-**Read allowed**:
-- `memory/` directory
-- `temp/计划/` directory
-- `temp/完成情况/` directory
-
-**Write allowed**:
-- `MEMORY.md` (root directory only)
-
-**Forbidden**:
-- `.openclaw/config/` - Core config
-- `skills/` - Skill files
-- `docs/` - Documents
-- `AGENTS.md`, `SOUL.md`, `TOOLS.md` - Protected files
-
-### 2. Auto Backup
-
-```bash
-MEMORY.md → MEMORY.md.backup-<timestamp>
-```
-
-Backup before every write to prevent data loss.
-
-### 3. Content Validation
-
-- New content cannot be empty
-- Must include important sections
-- New content length ≥ 90% of old content
-
-### 4. Lock Mechanism
-
-Prevent concurrent execution using `/tmp/dream.lock` file.
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DREAM_API_KEY` | Alibaba Cloud Bailian API Key | Required |
-| `DREAM_MODEL` | AI Model | `qwen3.5-plus` |
-
-### Get API Key
-
-1. Visit: https://bailian.console.aliyun.com/
-2. Login/Register Alibaba Cloud account
-3. Create API Key
-4. Copy Key to environment:
-   ```bash
-   export DREAM_API_KEY="sk-xxx"
-   ```
-
----
-
-## 📊 Performance
-
-### Test Results (2026-04-02)
-
-| Metric | Before | After | Optimization |
-|--------|--------|-------|--------------|
-| File Size | 30.25 KB | 15.45 KB | **-49%** |
-| Lines | 950 | 950 | Unchanged |
-| API Call | ✅ Success | - | - |
-| Backup | ✅ Created | - | - |
-
-### Performance
-
-- **Execution Time**: ~30 seconds
-- **API Calls**: 1 (qwen3.5-plus)
-- **Memory Usage**: <50MB
-- **Disk Usage**: ~30KB (with backup)
-
----
-
-## 📋 Commands Reference
-
-### Installation
-
-```bash
-# One-click install
-./install.sh
-
-# Manual install
-git clone <repo-url> skills/dream-system
-```
-
-### Configuration
-
-```bash
-# Set environment variables
-export DREAM_API_KEY="sk-xxx"
-export DREAM_MODEL="qwen3.5-plus"
-
-# Permanent config (add to ~/.bashrc)
-echo 'export DREAM_API_KEY="sk-xxx"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-### Execution
-
-```bash
-# Manual run
-cd ~/.openclaw/workspace
-node skills/dream-system/executor.js
-
-# View logs
-tail -f logs/dream.log
-
-# View backups
-ls -lh MEMORY.md.backup-*
-```
-
-### Cron Jobs
-
-```bash
-# View current crontab
-crontab -l
-
-# Edit crontab
-crontab -e
-
-# Add Dream task
-0 5 * * * cd ~/.openclaw/workspace && node skills/dream-system/executor.js >> logs/dream.log 2>&1
-
-# Disable task (add # before task)
-# 0 5 * * * ...
-
-# Delete task
-crontab -r
-```
-
-### Debug
-
-```bash
-# Check API config
-echo $DREAM_API_KEY
-echo $DREAM_MODEL
-
-# Test API call
-node -e "require('./skills/dream-system/aiAnalyzer.js').analyzeWithAI({}, []).then(console.log)"
-
-# Check file permissions
-ls -la skills/dream-system/
-
-# View process lock
-cat /tmp/dream.lock
-```
-
----
-
-## ❓ FAQ
-
-### Q: How to disable Dream system?
-
-```bash
-crontab -e
-# Add # before Dream task
-# 0 5 * * * ...
-```
-
-### Q: How to view logs?
-
-```bash
-tail -f ~/.openclaw/workspace/logs/dream.log
-```
-
-### Q: How to run manually?
-
-```bash
-cd ~/.openclaw/workspace
-node skills/dream-system/executor.js
-```
-
-### Q: API call failed?
-
-1. Check API Key is correct
-2. Check network connection
-3. View logs: `logs/dream.log`
-4. Test API: `curl -H "Authorization: Bearer $DREAM_API_KEY" https://dashscope.aliyuncs.com/compatible-mode/v1/models`
-
-### Q: How to restore backup?
-
-```bash
-# View backups
-ls -lh MEMORY.md.backup-*
-
-# Restore specific backup
-cp MEMORY.md.backup-1775103782790 MEMORY.md
-```
-
-### Q: Support other AI models?
-
-Yes! Modify `aiAnalyzer.js`:
-
-```javascript
-const AI_CONFIG = {
-  model: 'qwen-max',  // or any supported model
-  apiKey: process.env.DREAM_API_KEY,
-  baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1'
-}
-```
-
----
-
-## 🏗️ Architecture
-
-### Overview
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    OpenClaw Gateway                      │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            │ Scheduled Trigger (05:00 daily)
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Dream Memory System                    │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │ executor.js │→ │aiAnalyzer.js│→ │ pruner.js   │     │
-│  │  Executor   │  │  AI Analysis│  │  Pruning    │     │
-│  └─────────────┘  └─────────────┘  └─────────────┘     │
-│         │                │                  │           │
-│         ▼                ▼                  ▼           │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │            MEMORY.md (Long-term Memory)          │   │
-│  └─────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
-         │                │                  │
-         ▼                ▼                  ▼
-  ┌──────────┐    ┌──────────┐    ┌──────────┐
-  │ memory/  │    │temp/Plan │    │temp/Done │
-  │ Daily    │    │ Plans    │    │ Complete │
-  └──────────┘    └──────────┘    └──────────┘
-```
-
-### Modules
-
-#### 1. executor.js (Main Executor)
-
-**Responsibilities**:
-- Coordinate 4 phases (Orient, Gather, Consolidate, Prune)
-- Path permission validation (read-only mode)
-- Lock mechanism (prevent concurrent execution)
-- Error handling
-
-#### 2. aiAnalyzer.js (AI Analysis Module)
-
-**Responsibilities**:
-- Build analysis prompt
-- Call Alibaba Cloud Bailian API
-- Parse AI response (JSON format)
-- Generate memory update suggestions
-
-#### 3. pruner.js (Pruning Module)
-
-**Responsibilities**:
-- Analyze MEMORY.md content
-- Generate pruning suggestions (remove outdated info)
-- Safe write (with backup and validation)
-- Keep <200 lines
-
----
-
-## 📄 License
-
-**MIT License**
-
-```
-Copyright (c) 2026 JingWang【游戏人王鲸】【游戏制作人王鲸】
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
----
-
-## 🤝 Contributing
-
-Welcome to submit Issues and Pull Requests!
-
-### Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/JingWang-Star996/dream-system.git
-cd dream-system
-
-# Install dependencies (if any)
-npm install
-
-# Run test
-node executor.js
-```
-
-### Commit Convention
-
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation update
-- `style:` Code style
-- `refactor:` Refactoring
-- `test:` Test
-- `chore:` Build/Tools
-
----
-
-## 🙏 Acknowledgments
-
-- **Inspiration**: [Claude Code](https://claude.ai/code) memory management
-- **Platform**: [OpenClaw](https://github.com/openclaw/openclaw) community
-- **AI Provider**: [Alibaba Cloud Bailian](https://bailian.console.aliyun.com/)
-
----
-
-## 📬 Contact
-
-- **GitHub**: https://github.com/JingWang-Star996/dream-system
-- **Issues**: https://github.com/JingWang-Star996/dream-system/issues
-- **Author**: JingWang【游戏人王鲸】【游戏制作人王鲸】
-
----
-
-**Made with ❤️ by【游戏人王鲸】【游戏制作人王鲸】for OpenClaw Community**
-
-**Last Updated**: 2026-04-02
-
----
-
----
-
-# 🌙 Dream 记忆整合系统（中文文档）
-
-**灵感来自 Claude Code · 完全适配 OpenClaw · 一键安装，马上生效**
-
-**发布人**：【游戏人王鲸】【游戏制作人王鲸】
-
----
-
-## 📖 简介
-
-Dream 记忆整合系统是一个专为 OpenClaw 设计的自动化记忆管理工具。灵感来自 Claude Code 的记忆管理功能，完全适配 OpenClaw 架构。
-
-### ✨ 核心功能
-
-- 🤖 AI 智能分析 - 使用阿里云百炼 qwen3.5-plus 自动提取有价值信息
-- 📝 自动整合 - 将短期记忆（每日日志、工作记录）转化为长期记忆
-- 🗑️ 智能修剪 - 保持 MEMORY.md 简洁（<200 行，~25KB）
-- 💾 自动备份 - 写入前自动备份，防止数据丢失
-- ⏰ 定时执行 - 每天凌晨 5 点自动运行
-- 🔒 安全保护 - 只读模式 + 内容验证 + 锁机制
 
 ---
 
 ## 🚀 快速开始
 
-### 一键安装
+### 1. 克隆项目
 
 ```bash
-curl -O https://raw.githubusercontent.com/JingWang-Star996/dream-system/main/install.sh
-chmod +x install.sh
-./install.sh
+git clone https://github.com/JingWang-Star996/dream-system.git
+cd dream-system
 ```
 
-### 手动安装
+### 2. 配置环境变量
+
+**Linux/macOS**：
+```bash
+# 添加到 ~/.bashrc
+echo 'export DREAM_API_KEY="your-api-key-here"' >> ~/.bashrc
+echo 'export DREAM_MODEL="qwen3.5-plus"' >> ~/.bashrc
+
+# 生效
+source ~/.bashrc
+```
+
+**Windows**：
+```powershell
+setx DREAM_API_KEY "your-api-key-here"
+setx DREAM_MODEL "qwen3.5-plus"
+```
+
+### 3. 测试运行
 
 ```bash
-cd ~/.openclaw/workspace
-git clone https://github.com/JingWang-Star996/dream-system.git skills/dream-system
-export DREAM_API_KEY="sk-你的百炼 API Key"
+node executor.js
+```
+
+**预期输出**：
+```
+=== Dream 记忆整合系统启动 ===
+模型：qwen3.5-plus
+记忆目录：./memory
+记忆文件：./MEMORY.md
+
+【Phase 1】读取短期记忆...
+读取到 9 个短期记忆文件
+
+【Phase 2】AI 智能分析...
+AI 分析完成，生成 5 条新记忆
+
+【Phase 3】整合到长期记忆...
+记忆整合完成
+
+【Phase 4】智能修剪...
+记忆修剪完成
+
+=== Dream 记忆整合系统完成 ===
+```
+
+---
+
+## 📊 执行流程
+
+```
+┌─────────────────┐
+│  Phase 1        │
+│  读取短期记忆   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Phase 2        │
+│  AI 智能分析     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Phase 3        │
+│  整合到长期记忆 │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Phase 4        │
+│  智能修剪       │
+└─────────────────┘
+```
+
+---
+
+## 🔧 配置选项
+
+### 环境变量
+
+| 变量名 | 说明 | 默认值 | 必填 |
+|--------|------|--------|------|
+| `DREAM_API_KEY` | AI API Key | 无 | ✅ |
+| `DREAM_MODEL` | AI 模型 | `qwen3.5-plus` | ❌ |
+| `DREAM_MEMORY_DIR` | 记忆目录 | `./memory` | ❌ |
+| `DREAM_LOG_FILE` | 日志文件 | `./dream.log` | ❌ |
+
+### 使用 .env 文件（推荐）
+
+创建 `.env` 文件：
+```bash
+DREAM_API_KEY=your-api-key-here
+DREAM_MODEL=qwen3.5-plus
+```
+
+**注意**：`.env` 文件已在 `.gitignore` 中，不会被提交到 Git。
+
+---
+
+## 📝 使用示例
+
+### 手动执行
+
+```bash
+cd dream-system
+node executor.js
+```
+
+### 定时任务
+
+**Linux/macOS**（crontab）：
+```bash
+# 编辑 crontab
 crontab -e
-# 添加：0 5 * * * cd ~/.openclaw/workspace && node skills/dream-system/executor.js >> logs/dream.log 2>&1
+
+# 添加每天凌晨 5 点执行
+0 5 * * * cd /path/to/dream-system && node executor.js >> logs/dream.log 2>&1
 ```
+
+**Windows**（任务计划程序）：
+1. 打开"任务计划程序"
+2. 创建基本任务
+3. 设置每天 5:00 触发
+4. 操作：启动程序 `node.exe`，参数 `executor.js`
 
 ---
 
-## 📁 文件结构
+## 🔒 安全最佳实践
 
-```
-dream-system/
-├── SKILL.md           # OpenClaw 技能定义
-├── executor.js        # 主执行器
-├── aiAnalyzer.js      # AI 分析模块
-├── pruner.js          # 修剪模块
-├── install.sh         # 一键安装脚本
-├── README.md          # 本文档
-└── 发布帖.md          # 详细发布帖
+### 1. 使用环境变量
+
+**❌ 错误**：
+```javascript
+const CONFIG = {
+  apiKey: 'sk-sp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+};
 ```
 
----
+**✅ 正确**：
+```javascript
+const CONFIG = {
+  apiKey: process.env.DREAM_API_KEY || ''
+};
+```
 
-## 📊 实测数据
+### 2. 不要提交敏感信息
 
-| 指标 | 修剪前 | 修剪后 | 优化 |
-|------|--------|--------|------|
-| 文件大小 | 30.25 KB | 15.45 KB | **-49%** |
-| 行数 | 950 行 | 950 行 | 保持不变 |
-| API 调用 | ✅ 成功 | - | - |
+**.gitignore** 已包含：
+```
+# 环境变量
+.env
+.env.local
+.env.*.local
 
----
+# 日志
+logs/
+*.log
 
-## ❓ 常见问题
+# 备份
+backups/
+*.backup
+```
 
-### Q: 如何禁用 Dream 系统？
+### 3. 发布前检查
 
+使用提供的检查脚本：
 ```bash
-crontab -e
-# 在 Dream 任务前添加 # 注释
+cd scripts
+./cleanup-before-release.sh
 ```
 
-### Q: 如何查看执行日志？
-
+或手动检查：
 ```bash
-tail -f ~/.openclaw/workspace/logs/dream.log
-```
+# 检查 API Key
+grep -r "sk-sp-" . --include="*.js"
 
-### Q: 如何手动执行？
-
-```bash
-cd ~/.openclaw/workspace
-node skills/dream-system/executor.js
+# 检查个人信息
+grep -r "z3129119" . --include="*.js"
 ```
 
 ---
 
-**Made with ❤️ by【游戏人王鲸】【游戏制作人王鲸】for OpenClaw Community**
+## 📚 文档
 
-**最后更新**：2026-04-02
+- [使用指南](https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e)
+- [发布前检查清单](docs/RELEASE_CHECKLIST.md)
+
+---
+
+## 🤝 贡献指南
+
+### 提交代码
+
+1. Fork 仓库
+2. 创建分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+### 发布前检查
+
+**必须执行**：
+```bash
+# 运行清理脚本
+./scripts/cleanup-before-release.sh
+
+# 手动检查
+grep -r "sk-sp-" . --include="*.js"
+grep -r "z3129119" . --include="*.js"
+```
+
+**检查清单**：
+- [ ] 无 API Key
+- [ ] 无用户名
+- [ ] 无本地路径
+- [ ] 无个人邮箱
+
+详见：[RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md)
+
+---
+
+## 📄 许可证
+
+MIT License
+
+---
+
+## 🔗 相关链接
+
+- **GitHub**: https://github.com/JingWang-Star996/dream-system
+- **Issues**: https://github.com/JingWang-Star996/dream-system/issues
+- **使用指南**: https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e
+
+---
+
+**最后更新**：2026-04-03  
+**版本**：v1.0.0
+
+---
+
+**🎊 感谢使用 Dream 记忆整合系统！**
