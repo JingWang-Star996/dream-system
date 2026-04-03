@@ -28,7 +28,7 @@ grep -r "sk-[a-zA-Z0-9]\{20,\}" . --include="*.js" --include="*.md" --include="*
 
 ```bash
 # 检查用户名
-grep -r "z3129119" . --include="*.js" --include="*.md" --include="*.sh"
+grep -r "username" . --include="*.js" --include="*.md" --include="*.sh"
 
 # 检查本地路径
 grep -r "/home/" . --include="*.js" --include="*.md" --include="*.sh" | grep -v "/home/node"
@@ -75,8 +75,8 @@ cat .gitignore
 **示例代码检查**：
 ```bash
 # ❌ 错误
-export DREAM_API_KEY="sk-sp-f2174d07a0324a9f8d31ecd651c3639e"
-cd /home/z3129119/dream-system
+export DREAM_API_KEY="sk-sp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+cd /home/username/dream-system
 
 # ✅ 正确
 export DREAM_API_KEY="your-api-key-here"
@@ -95,7 +95,7 @@ cd /path/to/dream-system
 **示例**：
 ```javascript
 // ❌ 错误
-// 默认路径：/home/z3129119/dream-system/memory
+// 默认路径：/home/username/dream-system/memory
 
 // ✅ 正确
 // 默认路径：./memory
@@ -147,7 +147,7 @@ git diff --cached
 
 # 如果没有该脚本，手动执行检查
 grep -r "sk-sp-" . --include="*.js"
-grep -r "z3129119" . --include="*.js"
+grep -r "username" . --include="*.js"
 ```
 
 ### 3. 本地测试
@@ -193,7 +193,7 @@ git push origin main
 **错误示例**：
 ```javascript
 const CONFIG = {
-  apiKey: 'sk-sp-f2174d07a0324a9f8d31ecd651c3639e'
+  apiKey: 'sk-sp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 };
 ```
 
@@ -210,7 +210,7 @@ const CONFIG = {
 
 **错误示例**：
 ```javascript
-const memoryDir = '/home/z3129119/dream-system/memory';
+const memoryDir = '/home/username/dream-system/memory';
 ```
 
 **正确做法**：
@@ -229,7 +229,7 @@ const memoryDir = process.env.DREAM_MEMORY_DIR || './memory';
 ## 安装
 
 ```bash
-cd /home/z3129119/dream-system
+cd /home/username/dream-system
 ```
 
 **正确做法**：

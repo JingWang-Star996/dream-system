@@ -7,8 +7,9 @@ echo "🔍 开始清理个人环境信息..."
 
 # 定义需要清理的模式
 PATTERNS=(
-  "z3129119"
-  "/home/z3129119"
+  "sk-sp-[a-zA-Z0-9]\{20,\}"
+  "username"
+  "/home/username"
   "$HOME"
 )
 
