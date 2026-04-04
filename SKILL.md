@@ -27,9 +27,9 @@ disable-model-invocation: false
 
 ### 第 2 层：自动备份
 **写入 MEMORY.md 前必须先备份**：
-```bash
-cp MEMORY.md MEMORY.md.backup-<时间戳>
-```
+- ✅ 使用 `write` 工具创建备份文件
+- ✅ 备份路径：`memory/MEMORY-backup-YYYY-MM-DD.md`
+- ❌ **禁止使用 exec 调用 cp 命令**（需要审批，会中断自动化）
 
 ### 第 4 层：内容验证
 **写入前验证**：

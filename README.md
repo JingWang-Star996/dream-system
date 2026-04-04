@@ -1,283 +1,228 @@
-# 🌙 Dream 记忆整合系统
+# Dream 记忆整合系统
 
-> 一个自动化的记忆整合系统，灵感来自 Claude Code 的记忆管理功能
-
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-
----
-
-## 🔒 安全提示
-
-**⚠️ 重要**：本项目不使用硬编码 API Key，所有敏感信息使用环境变量配置。
-
-**快速配置**：
-```bash
-export DREAM_API_KEY="your-api-key-here"
-export DREAM_MODEL="qwen3.5-plus"
-```
-
-**❌ 永远不要**：
-- 在代码中硬编码 API Key
-- 将 API Key 提交到 Git
-- 在公开文档中分享 API Key
+**版本**: v1.0.0  
+**状态**: ✅ 生产环境运行中  
+**最后更新**: 2026-04-04
 
 ---
 
-## ✨ 核心功能
+## 📋 概述
 
-- 🤖 **AI 智能分析** - 使用 qwen3.5-plus 模型分析短期记忆
-- 📝 **自动整合** - 将短期记忆转化为长期记忆
-- 🗑️ **智能修剪** - 保持 MEMORY.md 精简（<200 行）
-- 💾 **自动备份** - 写入前自动备份，防止数据丢失
-- ⏰ **定时执行** - 每天凌晨 5 点自动运行
+Dream 是一个自动化的记忆整合系统，将用户的短期记忆（每日日志、会话记录、任务完成情况）整合为长期记忆（MEMORY.md）。
 
----
-
-## 🏗️ 系统架构
-
-```
-dream-system/
-├── executor.js          # 主执行器
-├── aiAnalyzer.js        # AI 分析模块
-├── pruner.js            # 智能修剪模块
-├── config.js            # 配置管理
-├── scripts/             # 工具脚本
-│   └── cleanup-before-release.sh  # 发布前清理脚本
-└── docs/                # 文档
-    └── RELEASE_CHECKLIST.md  # 发布前检查清单
-```
+**核心价值**：
+- 🌙 每日凌晨 5 点自动执行
+- 🧠 智能分析、提炼关键信息
+- 💾 自动备份，确保安全
+- ✂️ 规则修剪，保持简洁
+- 🔒 只读模式，保护核心配置
 
 ---
 
 ## 🚀 快速开始
 
-### 1. 克隆项目
+### 安装
+
+Dream 是 OpenClaw Skill 格式，安装方式：
 
 ```bash
-git clone https://github.com/JingWang-Star996/dream-system.git
-cd dream-system
+# 方式 1：克隆仓库
+git clone https://github.com/openclaw/dream-memory.git
+cp -r dream-memory/skills/dream-system ~/.openclaw/workspace/skills/
+
+# 方式 2：使用 clawhub（推荐）
+clawhub install dream-memory
 ```
 
-### 2. 配置环境变量
+### 配置定时任务
 
-**Linux/macOS**：
-```bash
-# 添加到 ~/.bashrc
-echo 'export DREAM_API_KEY="your-api-key-here"' >> ~/.bashrc
-echo 'export DREAM_MODEL="qwen3.5-plus"' >> ~/.bashrc
+在 OpenClaw 中配置 cron 任务（示例）：
 
-# 生效
-source ~/.bashrc
-```
-
-**Windows**：
-```powershell
-setx DREAM_API_KEY "your-api-key-here"
-setx DREAM_MODEL "qwen3.5-plus"
-```
-
-### 3. 测试运行
-
-```bash
-node executor.js
-```
-
-**预期输出**：
-```
-=== Dream 记忆整合系统启动 ===
-模型：qwen3.5-plus
-记忆目录：./memory
-记忆文件：./MEMORY.md
-
-【Phase 1】读取短期记忆...
-读取到 9 个短期记忆文件
-
-【Phase 2】AI 智能分析...
-AI 分析完成，生成 5 条新记忆
-
-【Phase 3】整合到长期记忆...
-记忆整合完成
-
-【Phase 4】智能修剪...
-记忆修剪完成
-
-=== Dream 记忆整合系统完成 ===
+```json
+{
+  "name": "Dream 记忆整合",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 5 * * *",
+    "tz": "Asia/Shanghai"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "执行 Dream 记忆整合任务",
+    "model": "你的首选模型"
+  }
+}
 ```
 
 ---
 
-## 📊 执行流程
+## 📊 功能特性
+
+### 1. 只读模式（安全保护）
+
+**只能读取**：
+- `memory/` 目录
+- `temp/计划/` 目录
+- `temp/完成情况/` 目录
+
+**只能写入**：
+- `MEMORY.md`（只追加，不覆盖）
+
+**禁止访问**：
+- `.openclaw/config/` - 核心配置
+- `skills/` - 技能文件
+- `AGENTS.md`, `SOUL.md`, `TOOLS.md` - 核心配置文件
+
+### 2. 自动备份
+
+每次更新 MEMORY.md 前自动创建备份：
+- 备份路径：`memory/MEMORY-backup-YYYY-MM-DD.md`（可配置）
+- 使用 `write` 工具，无需审批
+- 支持版本追溯和恢复
+
+### 3. 智能整合
+
+**四阶段流程**：
 
 ```
-┌─────────────────┐
-│  Phase 1        │
-│  读取短期记忆   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 2        │
-│  AI 智能分析     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 3        │
-│  整合到长期记忆 │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 4        │
-│  智能修剪       │
-└─────────────────┘
+Phase 1: Orient（定位）
+  → 读取 MEMORY.md，了解现有结构
+
+Phase 2: Gather Recent Signal（收集信号）
+  → 读取计划、完成情况、每日日志
+
+Phase 3: Consolidate（整合）
+  → 分析、分类、提取关键信息
+
+Phase 4: Prune and Index（修剪和索引）
+  → 删除过时信息，保持简洁
+```
+
+### 4. 内容验证
+
+写入前自动验证：
+1. 新内容不能为空
+2. 必须包含重要章节
+3. 新内容长度不少于旧内容的 90%
+
+---
+
+## 📝 输入输出
+
+### 输入数据
+
+**来源**（可配置）：
+- `memory/YYYY-MM-DD.md` - 每日记忆日志
+- `temp/计划/*.json` - 工作计划
+- `temp/完成情况/*.json` - 完成情况
+
+**示例输入**：
+```json
+{
+  "date": "2026-04-01",
+  "task": "项目 每日工作完成情况收集 - 18 点",
+  "status": "已完成",
+  "summary": {
+    "total": 10,
+    "replied": 9,
+    "replyRate": "90%"
+  }
+}
+```
+
+### 输出格式
+
+**目标文件**：`MEMORY.md`
+
+**输出示例**：
+```markdown
+## 📌 重要决策与原则
+
+### 项目 工作收集系统（2026-04-01）
+**来源**：项目 每日工作完成情况收集 - 18 点
+**内容**：已实现自动收集系统，18 点自动私聊 10 位成员，收集工作完成情况，回复率约 90%
+**优先级**：高
+**分类**：自动化系统
+
+---
+
+## 📋 项目与任务
+
+### 项目名称（状态）
+- 进度：xx%
+- 下一步：xxx
+
+---
+
+## 💡 经验教训
+
+### 教训主题（日期）
+**来源**：xxx
+**内容**：xxx
+**应用场景**：xxx
 ```
 
 ---
 
-## 🔧 配置选项
+## 🔧 执行规则
 
-### 环境变量
-
-| 变量名 | 说明 | 默认值 | 必填 |
-|--------|------|--------|------|
-| `DREAM_API_KEY` | AI API Key | 无 | ✅ |
-| `DREAM_MODEL` | AI 模型 | `qwen3.5-plus` | ❌ |
-| `DREAM_MEMORY_DIR` | 记忆目录 | `./memory` | ❌ |
-| `DREAM_LOG_FILE` | 日志文件 | `./dream.log` | ❌ |
-
-### 使用 .env 文件（推荐）
-
-创建 `.env` 文件：
-```bash
-DREAM_API_KEY=your-api-key-here
-DREAM_MODEL=qwen3.5-plus
-```
-
-**注意**：`.env` 文件已在 `.gitignore` 中，不会被提交到 Git。
+1. **保守更新** - 只在有真正价值时更新
+2. **保持简洁** - 每条记忆 < 100 字
+3. **日期格式** - 统一使用 `2026-04-01` 格式
+4. **来源标注** - 每条记忆标注来源
+5. **优先级标记** - 高/中/低
 
 ---
 
-## 📝 使用示例
+## ⚠️ 错误处理
 
-### 手动执行
+**如果遇到错误**：
+1. 停止执行
+2. 输出错误信息
+3. 不要写入任何内容
+4. 等待人工介入
 
-```bash
-cd dream-system
-node executor.js
-```
-
-### 定时任务
-
-**Linux/macOS**（crontab）：
-```bash
-# 编辑 crontab
-crontab -e
-
-# 添加每天凌晨 5 点执行
-0 5 * * * cd /path/to/dream-system && node executor.js >> logs/dream.log 2>&1
-```
-
-**Windows**（任务计划程序）：
-1. 打开"任务计划程序"
-2. 创建基本任务
-3. 设置每天 5:00 触发
-4. 操作：启动程序 `node.exe`，参数 `executor.js`
+**常见错误**：
+- 文件不存在 → 跳过该文件
+- 内容为空 → 跳过
+- 格式错误 → 记录错误，继续处理
 
 ---
 
-## 🔒 安全最佳实践
+## 📊 运行数据
 
-### 1. 使用环境变量
-
-**❌ 错误**：
-```javascript
-const CONFIG = {
-  apiKey: 'sk-sp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-};
-```
-
-**✅ 正确**：
-```javascript
-const CONFIG = {
-  apiKey: process.env.DREAM_API_KEY || ''
-};
-```
-
-### 2. 不要提交敏感信息
-
-**.gitignore** 已包含：
-```
-# 环境变量
-.env
-.env.local
-.env.*.local
-
-# 日志
-logs/
-*.log
-
-# 备份
-backups/
-*.backup
-```
-
-### 3. 发布前检查
-
-使用提供的检查脚本：
-```bash
-cd scripts
-./cleanup-before-release.sh
-```
-
-或手动检查：
-```bash
-# 检查 API Key
-grep -r "sk-sp-" . --include="*.js"
-
-# 检查个人信息
-grep -r "z3129119" . --include="*.js"
-```
+**执行频率**：可配置（推荐每日凌晨 5 点）  
+**平均耗时**：2-5 分钟  
+**文件大小**：MEMORY.md < 25KB（可配置）  
+**备份保留**：最近 30 天（可配置）
 
 ---
 
-## 📚 文档
+## 🔐 安全约束
 
-- [使用指南](https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e)
-- [发布前检查清单](docs/RELEASE_CHECKLIST.md)
+### 第 1 层：只读模式
+限制访问范围，保护核心配置。
+
+### 第 2 层：自动备份
+更新前必须备份，支持恢复。
+
+### 第 3 层：内容验证
+验证内容完整性和合理性。
+
+### 第 4 层：错误处理
+遇到错误立即停止，不写入损坏数据。
 
 ---
 
-## 🤝 贡献指南
+## 📚 相关文档
 
-### 提交代码
+- [SKILL.md](./SKILL.md) - Skill 定义
 
-1. Fork 仓库
-2. 创建分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+---
 
-### 发布前检查
+## 🤝 贡献
 
-**必须执行**：
-```bash
-# 运行清理脚本
-./scripts/cleanup-before-release.sh
-
-# 手动检查
-grep -r "sk-sp-" . --include="*.js"
-grep -r "z3129119" . --include="*.js"
-```
-
-**检查清单**：
-- [ ] 无 API Key
-- [ ] 无用户名
-- [ ] 无本地路径
-- [ ] 无个人邮箱
-
-详见：[RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md)
+欢迎提交 Issue 和 Pull Request！
 
 ---
 
@@ -287,17 +232,5 @@ MIT License
 
 ---
 
-## 🔗 相关链接
-
-- **GitHub**: https://github.com/JingWang-Star996/dream-system
-- **Issues**: https://github.com/JingWang-Star996/dream-system/issues
-- **使用指南**: https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e
-
----
-
-**最后更新**：2026-04-03  
-**版本**：v1.0.0
-
----
-
-**🎊 感谢使用 Dream 记忆整合系统！**
+**维护者**: AI System Architect  
+**最后更新**: 2026-04-04
