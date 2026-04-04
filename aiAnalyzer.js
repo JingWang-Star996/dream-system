@@ -8,11 +8,11 @@
 
 const https = require('https');
 
-// AI 配置
+// AI 配置 - 支持多种 AI 服务商
 const AI_CONFIG = {
   model: process.env.DREAM_MODEL || 'qwen3.5-plus',
   apiKey: process.env.DREAM_API_KEY || '',
-  baseUrl: 'https://coding.dashscope.aliyuncs.com/v1'
+  baseUrl: process.env.DREAM_API_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1'
 };
 
 /**

@@ -47,7 +47,7 @@ if [ -d "skills/dream-system-bak" ]; then
     cp -r skills/dream-system-bak/* skills/dream-system/
 else
     echo "⚠️  请手动下载文件到 skills/dream-system/"
-    echo "GitHub: https://github.com/your-username/dream-system"
+    echo "GitHub: https://github.com/JingWang-Star996/dream-system"
     exit 1
 fi
 

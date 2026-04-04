@@ -49,7 +49,7 @@ Dream 记忆整合系统是一个专为 OpenClaw 设计的自动化记忆管理�
 ```bash
 # 克隆或复制到 OpenClaw workspace
 cd ~/.openclaw/workspace
-git clone <your-repo-url> skills/dream-system
+git clone https://github.com/JingWang-Star996/dream-system.git skills/dream-system
 
 # 或直接复制文件
 cp -r dream-system ~/.openclaw/workspace/skills/
@@ -240,7 +240,7 @@ Dream Memory Consolidation System is an automated memory management tool designe
 ```bash
 # Clone or copy to OpenClaw workspace
 cd ~/.openclaw/workspace
-git clone <your-repo-url> skills/dream-system
+git clone https://github.com/JingWang-Star996/dream-system.git skills/dream-system
 
 # Or copy files directly
 cp -r dream-system ~/.openclaw/workspace/skills/
@@ -388,4 +388,4 @@ MIT License
 
 ---
 
-**Made with ❤️ for OpenClaw Community**
+**Made with ❤️ by 王鲸【游戏人王鲸】【游戏制作人王鲸】for OpenClaw Community**

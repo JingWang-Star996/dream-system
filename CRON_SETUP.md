@@ -12,7 +12,7 @@ crontab -e
 
 ```bash
 # 每日 18 点执行 Dream 记忆整合
-0 18 * * * cd /home/z3129119/.openclaw/workspace && node skills/dream-system/executor.js >> logs/dream.log 2>&1
+0 18 * * * cd ~/.openclaw/workspace && node skills/dream-system/executor.js >> logs/dream.log 2>&1
 ```
 
 ### 3. 验证
@@ -36,11 +36,11 @@ After=network.target
 
 [Service]
 Type=oneshot
-User=z3129119
-WorkingDirectory=/home/z3129119/.openclaw/workspace
+User=your-username
+WorkingDirectory=/home/your-username/.openclaw/workspace
 ExecStart=/usr/bin/node skills/dream-system/executor.js
-StandardOutput=append:/home/z3129119/.openclaw/workspace/logs/dream.log
-StandardError=append:/home/z3129119/.openclaw/workspace/logs/dream.log
+StandardOutput=append:/home/your-username/.openclaw/workspace/logs/dream.log
+StandardError=append:/home/your-username/.openclaw/workspace/logs/dream.log
 ```
 
 ### 2. 创建 timer 文件
@@ -132,14 +132,14 @@ mkdir -p /home/z3129119/.openclaw/workspace/logs
 `/etc/logrotate.d/dream-memory`
 
 ```
-/home/z3129119/.openclaw/workspace/logs/dream.log {
+/home/your-username/.openclaw/workspace/logs/dream.log {
     daily
     rotate 30
     compress
     delaycompress
     missingok
     notifempty
-    create 0644 z3129119 z3129119
+    create 0644 your-username your-username
 }
 ```
 
@@ -198,7 +198,7 @@ tail -f logs/dream.log
 ```bash
 #!/bin/bash
 
-LOG_FILE="/home/z3129119/.openclaw/workspace/logs/dream.log"
+LOG_FILE="~/.openclaw/workspace/logs/dream.log"
 LAST_RUN=$(tail -1 "$LOG_FILE" | grep -oP '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')
 
 if [ -z "$LAST_RUN" ]; then

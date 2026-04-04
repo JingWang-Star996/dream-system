@@ -23,7 +23,7 @@ Dream 记忆整合系统是一个专为 OpenClaw 设计的自动化记忆管理�
 
 ```bash
 # 下载安装脚本
-curl -O https://raw.githubusercontent.com/your-username/dream-system/main/install.sh
+curl -O https://raw.githubusercontent.com/JingWang-Star996/dream-system/main/install.sh
 
 # 执行安装
 chmod +x install.sh
@@ -35,7 +35,7 @@ chmod +x install.sh
 ```bash
 # 克隆到 OpenClaw workspace
 cd ~/.openclaw/workspace
-git clone https://github.com/your-username/dream-system.git skills/dream-system
+git clone https://github.com/JingWang-Star996/dream-system.git skills/dream-system
 
 # 配置 API Key
 export DREAM_API_KEY="sk-你的百炼 API Key"
@@ -151,6 +151,6 @@ MIT License - 详见 [LICENSE](LICENSE)
 
 **Made with ❤️ for OpenClaw Community**
 
-**GitHub**: https://github.com/your-username/dream-system  
-**Issues**: https://github.com/your-username/dream-system/issues  
-**Docs**: https://github.com/your-username/dream-system/blob/main/README.github.md
+**GitHub**: https://github.com/JingWang-Star996/dream-system  
+**Issues**: https://github.com/JingWang-Star996/dream-system/issues  
+**Docs**: https://github.com/JingWang-Star996/dream-system/blob/main/README.github.md

@@ -10,14 +10,14 @@ const fs = require('fs/promises')
 const path = require('path')
 const axios = require('axios')
 
-// AI 配置 - 阿里云百炼 Coding 端点（动态读取环境变量）
+// AI 配置 - 支持多种 AI 服务商（动态读取环境变量）
 function getAIConfig() {
   return {
     model: process.env.DREAM_MODEL || 'qwen3.5-plus',
     maxTokens: 4096,
     timeout: 300000,
-    apiKey: process.env.DREAM_API_KEY || '',  // 已移除硬编码 API Key
-    baseUrl: 'https://coding.dashscope.aliyuncs.com/v1'
+    apiKey: process.env.DREAM_API_KEY || '',  // 从环境变量读取
+    baseUrl: process.env.DREAM_API_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1'
   }
 }
 
