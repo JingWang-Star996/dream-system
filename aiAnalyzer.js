@@ -10,9 +10,9 @@ const https = require('https');
 
 // AI 配置
 const AI_CONFIG = {
-  model: process.env.DREAM_MODEL || 'qwen3.5-plus',
+  model: process.env.DREAM_MODEL || 'qwen3.6-plus',
   apiKey: process.env.DREAM_API_KEY || '',
-  baseUrl: 'https://coding.dashscope.aliyuncs.com/v1'
+  baseUrl: process.env.DREAM_API_URL || 'https://coding.dashscope.aliyuncs.com/v1'
 };
 
 /**
@@ -98,11 +98,13 @@ function callAI(prompt) {
 
     // 解析 baseUrl
     const url = new URL(AI_CONFIG.baseUrl);
+    // 使用 baseUrl 的 path 前缀 + chat/completions
+    const apiPath = url.pathname.replace(/\/$/, '') + '/chat/completions';
     
     const options = {
       hostname: url.hostname,
       port: 443,
-      path: '/v1/chat/completions',
+      path: apiPath,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -114,6 +116,10 @@ function callAI(prompt) {
     
     const req = https.request(options, (res) => {
       let data = '';
+      
+      if (res.statusCode !== 200) {
+        console.log(`⚠️ API HTTP ${res.statusCode}`);
+      }
       
       res.on('data', (chunk) => {
         data += chunk;

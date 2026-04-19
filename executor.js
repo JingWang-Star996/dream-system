@@ -18,7 +18,7 @@ const CONFIG = {
   memoryFile: path.join(__dirname, '../../MEMORY.md'),
   backupDir: path.join(__dirname, '../../memory/backups'),
   logFile: path.join(__dirname, '../../logs/dream.log'),
-  model: process.env.DREAM_MODEL || 'qwen3.5-plus',
+  model: process.env.DREAM_MODEL || 'qwen3.6-plus',
   apiKey: process.env.DREAM_API_KEY || ''
 };
 
@@ -105,12 +105,55 @@ function readShortTermMemories() {
 
 // Phase 3: 整合到长期记忆
 function integrateMemories(analysis) {
-  // TODO: 将 AI 分析结果整合到 MEMORY.md
-  
-  if (!fs.existsSync(CONFIG.memoryFile)) {
-    log('长期记忆文件不存在，创建新文件');
-    fs.writeFileSync(CONFIG.memoryFile, '# MEMORY.md - 长期记忆\n\n');
+  // 备份
+  if (!fs.existsSync(CONFIG.backupDir)) fs.mkdirSync(CONFIG.backupDir, { recursive: true });
+  const now = new Date();
+  const backupPath = path.join(CONFIG.backupDir, `MEMORY-backup-${now.toISOString().slice(0,10)}.md`);
+  if (fs.existsSync(CONFIG.memoryFile)) {
+    fs.copyFileSync(CONFIG.memoryFile, backupPath);
+    log(`已备份：${backupPath}`);
   }
+
+  // 读取现有 MEMORY.md
+  let existingContent = '';
+  if (fs.existsSync(CONFIG.memoryFile)) {
+    existingContent = fs.readFileSync(CONFIG.memoryFile, 'utf-8');
+  }
+
+  // 构建新内容
+  let newSections = '';
+  const today = now.toISOString().slice(0, 10);
+
+  if (analysis.newMemories && analysis.newMemories.length > 0) {
+    newSections += `\n\n## 🆕 自动整合（${today}）\n\n`;
+    for (const mem of analysis.newMemories) {
+      newSections += `### ${mem.title || '未命名'}\n`;
+      newSections += `- **分类**: ${mem.category || '未分类'}\n`;
+      newSections += `- **优先级**: ${mem.priority || '中'}\n`;
+      newSections += `- **内容**: ${mem.content || ''}\n\n`;
+    }
+  }
+
+  if (analysis.summary) {
+    newSections += `\n\n### 📊 本次整理总结\n${analysis.summary}\n`;
+  }
+
+  // 验证：新内容不能为空
+  if (!newSections.trim()) {
+    log('⚠️ AI 分析无新内容，跳过写入');
+    return;
+  }
+
+  // 验证：追加的内容不能少于 100 字符（防止无意义写入）
+  if (newSections.length < 100) {
+    log(`⚠️ 新内容(${newSections.length}B)太少，跳过写入`);
+    return;
+  }
+
+  // 追加到 MEMORY.md
+  const finalContent = existingContent + newSections;
+  fs.writeFileSync(CONFIG.memoryFile, finalContent, 'utf-8');
+  log(`✅ MEMORY.md 已更新（${existingContent.length}B → ${finalContent.length}B）`);
 }
 
 // Phase 4: 智能修剪
