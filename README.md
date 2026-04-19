@@ -2,7 +2,7 @@
 
 > 一个自动化的记忆整合系统，灵感来自 Claude Code 的记忆管理功能
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 ---
@@ -14,7 +14,8 @@
 **快速配置**：
 ```bash
 export DREAM_API_KEY="your-api-key-here"
-export DREAM_MODEL="qwen3.5-plus"
+export DREAM_MODEL="qwen3.6-plus"          # 默认模型已升级
+export DREAM_API_URL="https://coding.dashscope.aliyuncs.com/v1"  # 可选，覆盖 API 地址
 ```
 
 **❌ 永远不要**：
@@ -26,10 +27,10 @@ export DREAM_MODEL="qwen3.5-plus"
 
 ## ✨ 核心功能
 
-- 🤖 **AI 智能分析** - 使用 qwen3.5-plus 模型分析短期记忆
-- 📝 **自动整合** - 将短期记忆转化为长期记忆
-- 🗑️ **智能修剪** - 保持 MEMORY.md 精简（<200 行）
-- 💾 **自动备份** - 写入前自动备份，防止数据丢失
+- 🤖 **AI 智能分析** - 使用 qwen3.6-plus 模型分析短期记忆
+- 📝 **自动整合** - 将短期记忆转化为长期记忆（完整实现）
+- 💾 **自动备份** - 写入前自动备份 MEMORY.md，防止数据丢失
+- 🔍 **内容验证** - 空内容/过短内容自动跳过，防止无效写入
 - ⏰ **定时执行** - 每天凌晨 5 点自动运行
 
 ---
@@ -65,7 +66,7 @@ cd dream-system
 ```bash
 # 添加到 ~/.bashrc
 echo 'export DREAM_API_KEY="your-api-key-here"' >> ~/.bashrc
-echo 'export DREAM_MODEL="qwen3.5-plus"' >> ~/.bashrc
+echo 'export DREAM_MODEL="qwen3.6-plus"' >> ~/.bashrc
 
 # 生效
 source ~/.bashrc
@@ -74,7 +75,7 @@ source ~/.bashrc
 **Windows**：
 ```powershell
 setx DREAM_API_KEY "your-api-key-here"
-setx DREAM_MODEL "qwen3.5-plus"
+setx DREAM_MODEL "qwen3.6-plus"
 ```
 
 ### 3. 测试运行
@@ -86,7 +87,7 @@ node executor.js
 **预期输出**：
 ```
 === Dream 记忆整合系统启动 ===
-模型：qwen3.5-plus
+模型：qwen3.6-plus
 记忆目录：./memory
 记忆文件：./MEMORY.md
 
@@ -97,7 +98,8 @@ node executor.js
 AI 分析完成，生成 5 条新记忆
 
 【Phase 3】整合到长期记忆...
-记忆整合完成
+已备份：memory/backups/MEMORY-backup-2026-04-19.md
+MEMORY.md 已更新（12345B → 13567B）
 
 【Phase 4】智能修剪...
 记忆修剪完成
@@ -125,6 +127,7 @@ AI 分析完成，生成 5 条新记忆
 ┌─────────────────┐
 │  Phase 3        │
 │  整合到长期记忆 │
+│  (备份+验证+写入)│
 └────────┬────────┘
          │
          ▼
@@ -143,7 +146,8 @@ AI 分析完成，生成 5 条新记忆
 | 变量名 | 说明 | 默认值 | 必填 |
 |--------|------|--------|------|
 | `DREAM_API_KEY` | AI API Key | 无 | ✅ |
-| `DREAM_MODEL` | AI 模型 | `qwen3.5-plus` | ❌ |
+| `DREAM_MODEL` | AI 模型 | `qwen3.6-plus` | ❌ |
+| `DREAM_API_URL` | API 地址 | `https://coding.dashscope.aliyuncs.com/v1` | ❌ |
 | `DREAM_MEMORY_DIR` | 记忆目录 | `./memory` | ❌ |
 | `DREAM_LOG_FILE` | 日志文件 | `./dream.log` | ❌ |
 
@@ -152,7 +156,7 @@ AI 分析完成，生成 5 条新记忆
 创建 `.env` 文件：
 ```bash
 DREAM_API_KEY=your-api-key-here
-DREAM_MODEL=qwen3.5-plus
+DREAM_MODEL=qwen3.6-plus
 ```
 
 **注意**：`.env` 文件已在 `.gitignore` 中，不会被提交到 Git。
@@ -295,8 +299,16 @@ MIT License
 
 ---
 
-**最后更新**：2026-04-03  
-**版本**：v1.0.0
+## 📋 更新日志
+
+### v1.1.0 (2026-04-19)
+- 升级默认模型：`qwen3.5-plus` → `qwen3.6-plus`
+- API 地址改为 `coding.dashscope.aliyuncs.com/v1`，支持 `DREAM_API_URL` 环境变量覆盖
+- `integrateMemories` 从 TODO 变为完整实现：自动备份 + 结构化追加 + 内容验证
+- AI 分析 path 改为动态拼接（兼容不同 baseUrl 格式）
+
+### v1.0.0 (2026-04-03)
+- 初始版本发布
 
 ---
 
