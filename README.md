@@ -1,315 +1,136 @@
 # 🌙 Dream 记忆整合系统
 
-> 一个自动化的记忆整合系统，灵感来自 Claude Code 的记忆管理功能
+> 自动化记忆管理系统 — 将短期记忆自动整合为长期记忆，保持 MEMORY.md 精简高效。
 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
----
+## 概述
 
-## 🔒 安全提示
+Dream 是一个自动化的记忆整合系统。它定期读取 `memory/` 目录下的短期记忆文件，通过 AI 分析提取有价值的信息，自动追加到长期记忆 `MEMORY.md` 中，并通过智能修剪保持文件精简。
 
-**⚠️ 重要**：本项目不使用硬编码 API Key，所有敏感信息使用环境变量配置。
+设计灵感来源于 Claude Code 的记忆管理机制，适配 OpenClaw 的记忆体系。
 
-**快速配置**：
+## 核心功能
+
+| 功能 | 说明 |
+|------|------|
+| AI 智能分析 | 使用 qwen3.6-plus 模型分析短期记忆，提取 3-5 条高价值长期记忆 |
+| 自动整合 | 将分析结果按结构化格式追加到 MEMORY.md |
+| 自动备份 | 写入前自动备份 MEMORY.md，防止数据丢失 |
+| 内容验证 | 跳过空内容或过短内容（<100 字符），防止无效写入 |
+| 智能修剪 | 基于 AI + 规则双引擎，自动识别并删除过期/低优先级章节 |
+
+## 执行流程
+
+```
+Phase 1 ── 读取短期记忆
+   │           扫描 memory/ 目录下的所有 .md 文件
+   ▼
+Phase 2 ── AI 智能分析
+   │           调用大模型提取有价值的长期记忆
+   ▼
+Phase 3 ── 整合到长期记忆
+   │           备份 MEMORY.md → 结构化追加 → 内容验证
+   ▼
+Phase 4 ── 智能修剪
+               当文件超过 25KB 或 200 行时自动修剪
+```
+
+## 快速开始
+
+### 1. 配置
+
+设置环境变量：
+
 ```bash
 export DREAM_API_KEY="your-api-key-here"
-export DREAM_MODEL="qwen3.6-plus"          # 默认模型已升级
-export DREAM_API_URL="https://coding.dashscope.aliyuncs.com/v1"  # 可选，覆盖 API 地址
 ```
 
-**❌ 永远不要**：
-- 在代码中硬编码 API Key
-- 将 API Key 提交到 Git
-- 在公开文档中分享 API Key
+可选环境变量：
 
----
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DREAM_API_KEY` | API 密钥（必填） | — |
+| `DREAM_MODEL` | AI 模型 | `qwen3.6-plus` |
+| `DREAM_API_URL` | API 地址 | `https://coding.dashscope.aliyuncs.com/v1` |
+| `DREAM_MEMORY_DIR` | 记忆目录 | `./memory` |
+| `DREAM_LOG_FILE` | 日志文件 | `./dream.log` |
 
-## ✨ 核心功能
-
-- 🤖 **AI 智能分析** - 使用 qwen3.6-plus 模型分析短期记忆
-- 📝 **自动整合** - 将短期记忆转化为长期记忆（完整实现）
-- 💾 **自动备份** - 写入前自动备份 MEMORY.md，防止数据丢失
-- 🔍 **内容验证** - 空内容/过短内容自动跳过，防止无效写入
-- ⏰ **定时执行** - 每天凌晨 5 点自动运行
-
----
-
-## 🏗️ 系统架构
-
-```
-dream-system/
-├── executor.js          # 主执行器
-├── aiAnalyzer.js        # AI 分析模块
-├── pruner.js            # 智能修剪模块
-├── config.js            # 配置管理
-├── scripts/             # 工具脚本
-│   └── cleanup-before-release.sh  # 发布前清理脚本
-└── docs/                # 文档
-    └── RELEASE_CHECKLIST.md  # 发布前检查清单
-```
-
----
-
-## 🚀 快速开始
-
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/JingWang-Star996/dream-system.git
-cd dream-system
-```
-
-### 2. 配置环境变量
-
-**Linux/macOS**：
-```bash
-# 添加到 ~/.bashrc
-echo 'export DREAM_API_KEY="your-api-key-here"' >> ~/.bashrc
-echo 'export DREAM_MODEL="qwen3.6-plus"' >> ~/.bashrc
-
-# 生效
-source ~/.bashrc
-```
-
-**Windows**：
-```powershell
-setx DREAM_API_KEY "your-api-key-here"
-setx DREAM_MODEL "qwen3.6-plus"
-```
-
-### 3. 测试运行
+### 2. 手动执行
 
 ```bash
 node executor.js
 ```
 
-**预期输出**：
-```
-=== Dream 记忆整合系统启动 ===
-模型：qwen3.6-plus
-记忆目录：./memory
-记忆文件：./MEMORY.md
+### 3. 定时执行（推荐）
 
-【Phase 1】读取短期记忆...
-读取到 9 个短期记忆文件
-
-【Phase 2】AI 智能分析...
-AI 分析完成，生成 5 条新记忆
-
-【Phase 3】整合到长期记忆...
-已备份：memory/backups/MEMORY-backup-2026-04-19.md
-MEMORY.md 已更新（12345B → 13567B）
-
-【Phase 4】智能修剪...
-记忆修剪完成
-
-=== Dream 记忆整合系统完成 ===
-```
-
----
-
-## 📊 执行流程
-
-```
-┌─────────────────┐
-│  Phase 1        │
-│  读取短期记忆   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 2        │
-│  AI 智能分析     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 3        │
-│  整合到长期记忆 │
-│  (备份+验证+写入)│
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Phase 4        │
-│  智能修剪       │
-└─────────────────┘
-```
-
----
-
-## 🔧 配置选项
-
-### 环境变量
-
-| 变量名 | 说明 | 默认值 | 必填 |
-|--------|------|--------|------|
-| `DREAM_API_KEY` | AI API Key | 无 | ✅ |
-| `DREAM_MODEL` | AI 模型 | `qwen3.6-plus` | ❌ |
-| `DREAM_API_URL` | API 地址 | `https://coding.dashscope.aliyuncs.com/v1` | ❌ |
-| `DREAM_MEMORY_DIR` | 记忆目录 | `./memory` | ❌ |
-| `DREAM_LOG_FILE` | 日志文件 | `./dream.log` | ❌ |
-
-### 使用 .env 文件（推荐）
-
-创建 `.env` 文件：
-```bash
-DREAM_API_KEY=your-api-key-here
-DREAM_MODEL=qwen3.6-plus
-```
-
-**注意**：`.env` 文件已在 `.gitignore` 中，不会被提交到 Git。
-
----
-
-## 📝 使用示例
-
-### 手动执行
+通过 crontab 每天凌晨 5 点自动运行：
 
 ```bash
-cd dream-system
-node executor.js
-```
-
-### 定时任务
-
-**Linux/macOS**（crontab）：
-```bash
-# 编辑 crontab
 crontab -e
-
-# 添加每天凌晨 5 点执行
+# 添加以下行
 0 5 * * * cd /path/to/dream-system && node executor.js >> logs/dream.log 2>&1
 ```
 
-**Windows**（任务计划程序）：
-1. 打开"任务计划程序"
-2. 创建基本任务
-3. 设置每天 5:00 触发
-4. 操作：启动程序 `node.exe`，参数 `executor.js`
+## 项目结构
 
----
-
-## 🔒 安全最佳实践
-
-### 1. 使用环境变量
-
-**❌ 错误**：
-```javascript
-const CONFIG = {
-  apiKey: 'sk-sp-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-};
+```
+dream-system/
+├── executor.js          # 主执行器（4 阶段流水线）
+├── aiAnalyzer.js        # AI 分析模块（调用大模型提取记忆）
+├── pruner.js            # 智能修剪模块（AI + 规则双引擎）
+├── config.js            # 配置管理
+├── scripts/
+│   └── cleanup-before-release.sh  # 发布前清理脚本
+└── docs/
+    └── RELEASE_CHECKLIST.md       # 发布检查清单
 ```
 
-**✅ 正确**：
-```javascript
-const CONFIG = {
-  apiKey: process.env.DREAM_API_KEY || ''
-};
-```
+## 模块说明
 
-### 2. 不要提交敏感信息
+### executor.js — 主执行器
 
-**.gitignore** 已包含：
-```
-# 环境变量
-.env
-.env.local
-.env.*.local
+四阶段流水线：读取短期记忆 → AI 分析 → 整合到长期记忆 → 智能修剪。无新的短期记忆时自动跳过本次执行。
 
-# 日志
-logs/
-*.log
+### aiAnalyzer.js — AI 分析
 
-# 备份
-backups/
-*.backup
-```
+调用大模型分析短期记忆文件内容，提取标题、内容、分类、优先级等结构化信息。未配置 API Key 时跳过 AI 分析，不报错。
 
-### 3. 发布前检查
+### pruner.js — 智能修剪
 
-使用提供的检查脚本：
+- **触发条件**：MEMORY.md 超过 25KB 或 200 行
+- **AI 模式**：调用大模型分析各章节，生成删除/保留建议
+- **规则模式**：AI 不可用时自动降级为规则修剪（低优先级 +7 天、中优先级 +30 天、临时内容 +1 天）
+- **安全写入**：写入前备份 → 写入临时文件 → 验证非空 → 原子替换
+
+### config.js — 配置管理
+
+统一管理 AI 配置和系统配置，全部支持环境变量覆盖。
+
+## 配置方式
+
+推荐使用 `.env` 文件（已在 `.gitignore` 中）：
+
 ```bash
-cd scripts
-./cleanup-before-release.sh
+DREAM_API_KEY=your-api-key-here
+DREAM_MODEL=qwen3.6-plus
+DREAM_API_URL=https://coding.dashscope.aliyuncs.com/v1
 ```
 
-或手动检查：
-```bash
-# 检查 API Key
-grep -r "sk-sp-" . --include="*.js"
-
-# 检查个人信息
-grep -r "z3129119" . --include="*.js"
-```
-
----
-
-## 📚 文档
-
-- [使用指南](https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e)
-- [发布前检查清单](docs/RELEASE_CHECKLIST.md)
-
----
-
-## 🤝 贡献指南
-
-### 提交代码
-
-1. Fork 仓库
-2. 创建分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-### 发布前检查
-
-**必须执行**：
-```bash
-# 运行清理脚本
-./scripts/cleanup-before-release.sh
-
-# 手动检查
-grep -r "sk-sp-" . --include="*.js"
-grep -r "z3129119" . --include="*.js"
-```
-
-**检查清单**：
-- [ ] 无 API Key
-- [ ] 无用户名
-- [ ] 无本地路径
-- [ ] 无个人邮箱
-
-详见：[RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md)
-
----
-
-## 📄 许可证
-
-MIT License
-
----
-
-## 🔗 相关链接
-
-- **GitHub**: https://github.com/JingWang-Star996/dream-system
-- **Issues**: https://github.com/JingWang-Star996/dream-system/issues
-- **使用指南**: https://www.feishu.cn/docx/Rv57duDxlobsDIxAEYKcodCcn4e
-
----
-
-## 📋 更新日志
+## 版本历史
 
 ### v1.1.0 (2026-04-19)
+
 - 升级默认模型：`qwen3.5-plus` → `qwen3.6-plus`
-- API 地址改为 `coding.dashscope.aliyuncs.com/v1`，支持 `DREAM_API_URL` 环境变量覆盖
-- `integrateMemories` 从 TODO 变为完整实现：自动备份 + 结构化追加 + 内容验证
-- AI 分析 path 改为动态拼接（兼容不同 baseUrl 格式）
+- API 地址改为 `coding.dashscope.aliyuncs.com/v1`，支持 `DREAM_API_URL` 环境变量
+- `integrateMemories` 完整实现：自动备份 + 结构化追加 + 内容验证
+- AI 分析路径动态拼接，兼容不同 baseUrl 格式
 
 ### v1.0.0 (2026-04-03)
+
 - 初始版本发布
 
----
+## 许可证
 
-**🎊 感谢使用 Dream 记忆整合系统！**
+MIT
