@@ -2,6 +2,8 @@
 
 > 自动化记忆管理系统 — 将短期记忆自动整合为长期记忆，保持 MEMORY.md 精简高效。
 
+**🌍 语言**: 中文 | [English](README_EN.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [한국어](README_KR.md)
+
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 

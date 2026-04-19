@@ -1,3 +1,8 @@
+<!-- README in English -->
+
+**🌍 Languages**: 中文 | [English](README_EN.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [한국어](README_KR.md)
+
+
 # 🌙 Dream Memory Integration System
 
 > Automated memory management — consolidates short-term memories into long-term memory, keeping MEMORY.md lean and useful.
